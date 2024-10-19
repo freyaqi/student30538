@@ -1,0 +1,160 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Ticket processing flow starting from VIOL.",
+  "width": 600,
+  "height": 400,
+  "padding": 5,
+  "data": [
+    {
+      "name": "tree",
+      "values": [
+        {
+          "id": 1,
+          "name": "VIOL",
+          "parent": null,
+          "y": 333.33333333333337,
+          "x": 0,
+          "depth": 0,
+          "children": 2
+        },
+        {
+          "id": 2,
+          "name": "DETR",
+          "parent": 1,
+          "y": 277.77777777777777,
+          "x": 75,
+          "depth": 1,
+          "children": 2
+        },
+        {
+          "id": 3,
+          "name": "SEIZ",
+          "parent": 2,
+          "y": 222.22222222222223,
+          "x": 150,
+          "depth": 2,
+          "children": 2
+        },
+        {
+          "id": 4,
+          "name": "FINL",
+          "parent": 3,
+          "y": 166.66666666666669,
+          "x": 225,
+          "depth": 3,
+          "children": 2
+        },
+        {
+          "id": 5,
+          "name": "DLS",
+          "parent": 4,
+          "y": 111.11111111111111,
+          "x": 300,
+          "depth": 4,
+          "children": 0
+        },
+        {
+          "id": 6,
+          "name": "NA (Paid/Dismissed)",
+          "parent": 1,
+          "y": 388.8888888888889,
+          "x": 75,
+          "depth": 1,
+          "children": 0
+        },
+        {
+          "id": 7,
+          "name": "NA (Paid/Dismissed)",
+          "parent": 2,
+          "y": 333.33333333333337,
+          "x": 150,
+          "depth": 2,
+          "children": 0
+        },
+        {
+          "id": 8,
+          "name": "NA (Paid/Dismissed)",
+          "parent": 3,
+          "y": 277.77777777777777,
+          "x": 225,
+          "depth": 3,
+          "children": 0
+        },
+        {
+          "id": 9,
+          "name": "NA (Paid/Dismissed)",
+          "parent": 4,
+          "y": 222.22222222222223,
+          "x": 300,
+          "depth": 4,
+          "children": 0
+        }
+      ],
+      "transform": [
+        {"type": "stratify", "key": "id", "parentKey": "parent"},
+        {
+          "type": "tree",
+          "method": "tidy",
+          "size": [{"signal": "width - 100"}, {"signal": "height - 100"}],
+          "separation": true,
+          "as": ["y", "x", "depth", "children"]
+        }
+      ]
+    },
+    {
+      "name": "links",
+      "source": "tree",
+      "transform": [
+        {"type": "treelinks"},
+        {"type": "linkpath", "orient": "horizontal", "shape": "diagonal"}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {"data": "tree", "field": "depth"},
+      "range": {"scheme": "category20"}
+    }
+  ],
+  "marks": [
+    {
+      "type": "path",
+      "from": {"data": "links"},
+      "encode": {
+        "update": {"path": {"field": "path"}, "stroke": {"value": "#ccc"}}
+      }
+    },
+    {
+      "type": "symbol",
+      "from": {"data": "tree"},
+      "encode": {
+        "enter": {"size": {"value": 100}, "stroke": {"value": "#fff"}},
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "fill": {"scale": "color", "field": "depth"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "tree"},
+      "encode": {
+        "enter": {
+          "text": {"field": "name"},
+          "fontSize": {"value": 12},
+          "baseline": {"value": "middle"}
+        },
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "dx": {"signal": "datum.children ? -7 : 7"},
+          "align": {"signal": "datum.children ? 'right' : 'left'"}
+        }
+      }
+    }
+  ],
+  "config": {}
+}
